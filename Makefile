@@ -22,11 +22,13 @@ PROTOBUF_ABSL_DEPS = absl_absl_check absl_absl_log absl_algorithm absl_base absl
 # tweak the list of libraries to link against to fix the build.
 PROTOBUF_UTF8_RANGE_LINK_LIBS = -lutf8_validity
 
+GRPC_INCLUDES=/home/.local/include/
+
 HOST_SYSTEM = $(shell uname | cut -f 1 -d_)
 SYSTEM ?= $(HOST_SYSTEM)
 CXX = g++
 CPPFLAGS += `pkg-config --cflags protobuf grpc absl_flags absl_flags_parse`
-CXXFLAGS += -std=c++14
+CXXFLAGS += -std=c++17
 ifeq ($(SYSTEM),Darwin)
 LDFLAGS += -L/usr/local/lib `pkg-config --libs --static protobuf grpc++ absl_flags absl_flags_parse $(PROTOBUF_ABSL_DEPS)`\
            $(PROTOBUF_UTF8_RANGE_LINK_LIBS) \
@@ -44,11 +46,11 @@ PROTOC = protoc
 GRPC_CPP_PLUGIN = grpc_cpp_plugin
 GRPC_CPP_PLUGIN_PATH ?= `which $(GRPC_CPP_PLUGIN)`
 
-PROTOS_PATH = ../../protos
+PROTOS_PATH = ./protos
 
 vpath %.proto $(PROTOS_PATH)
 
-all: system-check greeter_client greeter_server greeter_async_client greeter_async_client2 greeter_async_server greeter_callback_client greeter_callback_server
+all: system-check greeter_client greeter_server 
 
 greeter_client: helloworld.pb.o helloworld.grpc.pb.o greeter_client.o
 	$(CXX) $^ $(LDFLAGS) -o $@
@@ -56,20 +58,6 @@ greeter_client: helloworld.pb.o helloworld.grpc.pb.o greeter_client.o
 greeter_server: helloworld.pb.o helloworld.grpc.pb.o greeter_server.o
 	$(CXX) $^ $(LDFLAGS) -o $@
 
-greeter_async_client: helloworld.pb.o helloworld.grpc.pb.o greeter_async_client.o
-	$(CXX) $^ $(LDFLAGS) -o $@
-
-greeter_async_client2: helloworld.pb.o helloworld.grpc.pb.o greeter_async_client2.o
-	$(CXX) $^ $(LDFLAGS) -o $@
-
-greeter_async_server: helloworld.pb.o helloworld.grpc.pb.o greeter_async_server.o
-	$(CXX) $^ $(LDFLAGS) -o $@
-
-greeter_callback_client: helloworld.pb.o helloworld.grpc.pb.o greeter_callback_client.o
-	$(CXX) $^ $(LDFLAGS) -o $@
-
-greeter_callback_server: helloworld.pb.o helloworld.grpc.pb.o greeter_callback_server.o
-	$(CXX) $^ $(LDFLAGS) -o $@
 
 .PRECIOUS: %.grpc.pb.cc
 %.grpc.pb.cc: %.proto
@@ -80,7 +68,7 @@ greeter_callback_server: helloworld.pb.o helloworld.grpc.pb.o greeter_callback_s
 	$(PROTOC) -I $(PROTOS_PATH) --cpp_out=. $<
 
 clean:
-	rm -f *.o *.pb.cc *.pb.h greeter_client greeter_server greeter_async_client greeter_async_client2 greeter_async_server greeter_callback_client greeter_callback_server
+	rm -f *.o *.pb.cc *.pb.h greeter_client greeter_server 
 
 
 # The following is to test your system and ensure a smoother experience.
