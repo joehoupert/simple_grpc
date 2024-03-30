@@ -45,13 +45,22 @@ popd
 
 Here's what I did to build the helloworld app
 ```bash
-# Put it somewhere
+# Let's put this repo somewhere
 cd /home/simple_grpc
-
-# Clone this repo
 git clone git@github.com:joehoupert/simple_grpc.git
 pushd simple_grpc
-make
 
+# Help pkg-config out
+ export PKG_CONFIG_PATH=$MY_INSTALL_DIR/lib/pkgconfig/
+
+# Let's get it
+make
+```
+
+# Running
+Just...run the server, then run the client.
+```bash
+./greeter_server &
+./greeter_client
 ```
 
